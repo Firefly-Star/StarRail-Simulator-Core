@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.22)
 
 project(starrail_simulator_core LANGUAGES CXX)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -18,11 +20,13 @@ separate_arguments(PYBIND11_INCLUDES NATIVE_COMMAND "${PYBIND11_INCLUDES_RAW}")
 
 add_library(starrail_cpp_core MODULE
     src/bindings/module.cpp
+    src/bindings/state/bind_current_action_state.cpp
 )
 
 target_include_directories(starrail_cpp_core
     PRIVATE
         include
+        src/bindings
 )
 
 target_compile_options(starrail_cpp_core PRIVATE -fvisibility=hidden)
