@@ -2,7 +2,7 @@
 #include <pybind11/stl.h>
 
 #include "bindings.hpp"
-#include "srs/state/current_action_state.hpp"
+#include "srs/state/action_state.hpp"
 
 void bind_current_action_state(py::module_& module) {
     using srs::state::CurrentActionState;
@@ -39,4 +39,13 @@ void bind_current_action_state(py::module_& module) {
         .def_readwrite("valid_main_targets", &CurrentActionState::valid_main_targets)
         .def_readwrite("needs_target", &CurrentActionState::needs_target)
         .def_readwrite("needs_confirm", &CurrentActionState::needs_confirm);
+}
+
+void bind_resources_state(py::module_& module) {
+    using srs::state::ResourcesState;
+
+    py::class_<ResourcesState>(module, "ResourcesState")
+        .def(py::init<int, int>(), py::arg("skill_points") = 3, py::arg("max_skill_points") = 5)
+        .def_readwrite("skill_points", &ResourcesState::skill_points)
+        .def_readwrite("max_skill_points", &ResourcesState::max_skill_points);
 }

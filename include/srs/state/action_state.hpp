@@ -1,8 +1,8 @@
 #pragma once
 
 #include <string>
-#include <vector>
 #include <utility>
+#include <vector>
 
 namespace srs::state {
 
@@ -37,6 +37,15 @@ struct CurrentActionState {
           valid_main_targets(std::move(valid_main_targets)),
           needs_target(needs_target),
           needs_confirm(needs_confirm) {}
+};
+
+struct ResourcesState {
+    int skill_points;
+    int max_skill_points;
+
+    ResourcesState(int skill_points = 3, int max_skill_points = 5)
+        : skill_points(skill_points),
+          max_skill_points(max_skill_points) {}
 };
 
 }  // namespace srs::state
