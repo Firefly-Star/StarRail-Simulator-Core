@@ -5,7 +5,7 @@
 #include "srs/state/action_state.hpp"
 
 void bind_current_action_state(py::module_& module) {
-    using srs::state::CurrentActionState;
+    using srs::CurrentActionState;
 
     py::class_<CurrentActionState>(module, "CurrentActionState")
         .def(
@@ -42,7 +42,7 @@ void bind_current_action_state(py::module_& module) {
 }
 
 void bind_resources_state(py::module_& module) {
-    using srs::state::ResourcesState;
+    using srs::ResourcesState;
 
     py::class_<ResourcesState>(module, "ResourcesState")
         .def(py::init<int, int>(), py::arg("skill_points") = 3, py::arg("max_skill_points") = 5)

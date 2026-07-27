@@ -9,3 +9,4 @@ void bind_action_top_state(py::module_& module);
 void bind_resources_state(py::module_& module);
 void bind_action_queue_state(py::module_& module);
 void bind_game_state(py::module_& module);
+void bind_logic_advance(py::module_& module);

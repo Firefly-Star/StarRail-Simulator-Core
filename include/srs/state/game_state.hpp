@@ -2,11 +2,13 @@
 
 #include <pybind11/pytypes.h>
 
+#include "srs/state/action_queue_state.hpp"
+
 #include <string>
 #include <utility>
 #include <vector>
 
-namespace srs::state {
+namespace srs {
 
 struct GameState {
     int tick;
@@ -19,7 +21,7 @@ struct GameState {
     std::string error = "";
     double error_time = 0.0;
     std::vector<std::string> log = {};
-    pybind11::object action_queue = pybind11::none();
+    ActionQueueState action_queue;
     pybind11::object action_top = pybind11::none();
     pybind11::object resources = pybind11::none();
     std::string suspended_normal_actor_id = "";
@@ -37,7 +39,7 @@ struct GameState {
         std::string error = "",
         double error_time = 0.0,
         std::vector<std::string> log = {},
-        pybind11::object action_queue = pybind11::none(),
+        ActionQueueState action_queue = {},
         pybind11::object action_top = pybind11::none(),
         pybind11::object resources = pybind11::none(),
         std::string suspended_normal_actor_id = "",
@@ -62,4 +64,4 @@ struct GameState {
           active_actor(std::move(active_actor)) {}
 };
 
-}  // namespace srs::state
+}  // namespace srs

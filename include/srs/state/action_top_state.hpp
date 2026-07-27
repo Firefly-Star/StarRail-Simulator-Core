@@ -4,7 +4,7 @@
 #include <utility>
 #include <vector>
 
-namespace srs::state {
+namespace srs {
 
 constexpr int TOP_PRIORITY_FOLLOW_UP = 0;
 constexpr int TOP_PRIORITY_EXTRA_TURN = 1;
@@ -35,4 +35,4 @@ struct ActionTopEntryState {
           skill_id(std::move(skill_id)) {}
 };
 
-}  // namespace srs::state
+}  // namespace srs

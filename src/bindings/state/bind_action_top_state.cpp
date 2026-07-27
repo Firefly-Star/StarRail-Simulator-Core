@@ -5,12 +5,12 @@
 #include "srs/state/action_top_state.hpp"
 
 void bind_action_top_state(py::module_& module) {
-    using srs::state::ActionTopEntryState;
+    using srs::ActionTopEntryState;
 
-    module.attr("TOP_PRIORITY_FOLLOW_UP") = srs::state::TOP_PRIORITY_FOLLOW_UP;
-    module.attr("TOP_PRIORITY_EXTRA_TURN") = srs::state::TOP_PRIORITY_EXTRA_TURN;
-    module.attr("TOP_PRIORITY_ULTIMATE") = srs::state::TOP_PRIORITY_ULTIMATE;
-    module.attr("TOP_PRIORITY_NORMAL") = srs::state::TOP_PRIORITY_NORMAL;
+    module.attr("TOP_PRIORITY_FOLLOW_UP") = srs::TOP_PRIORITY_FOLLOW_UP;
+    module.attr("TOP_PRIORITY_EXTRA_TURN") = srs::TOP_PRIORITY_EXTRA_TURN;
+    module.attr("TOP_PRIORITY_ULTIMATE") = srs::TOP_PRIORITY_ULTIMATE;
+    module.attr("TOP_PRIORITY_NORMAL") = srs::TOP_PRIORITY_NORMAL;
 
     py::class_<ActionTopEntryState>(module, "ActionTopEntryState")
         .def(

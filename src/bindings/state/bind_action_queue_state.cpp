@@ -5,7 +5,8 @@
 #include "srs/state/action_queue_state.hpp"
 
 void bind_action_queue_state(py::module_& module) {
-    using srs::state::ActionQueueItemState;
+    using srs::ActionQueueItemState;
+    using srs::ActionQueueState;
 
     py::class_<ActionQueueItemState>(module, "ActionQueueItemState")
         .def(
@@ -29,4 +30,10 @@ void bind_action_queue_state(py::module_& module) {
         .def_readwrite("energy", &ActionQueueItemState::energy)
         .def_readwrite("max_energy", &ActionQueueItemState::max_energy)
         .def_readwrite("position", &ActionQueueItemState::position);
+
+    py::class_<ActionQueueState>(module, "ActionQueueState")
+        .def(py::init<>())
+        .def(py::init<std::vector<ActionQueueItemState>>(),
+             py::arg("items") = std::vector<ActionQueueItemState>{})
+        .def_readwrite("items", &ActionQueueState::items);
 }

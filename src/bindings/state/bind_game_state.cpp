@@ -2,10 +2,12 @@
 #include <pybind11/stl.h>
 
 #include "bindings.hpp"
+#include "srs/state/action_queue_state.hpp"
 #include "srs/state/game_state.hpp"
 
 void bind_game_state(py::module_& module) {
-    using srs::state::GameState;
+    using srs::GameState;
+    using srs::ActionQueueState;
 
     py::class_<GameState>(module, "GameState")
         .def(
@@ -20,7 +22,7 @@ void bind_game_state(py::module_& module) {
                 std::string,
                 double,
                 std::vector<std::string>,
-                py::object,
+                ActionQueueState,
                 py::object,
                 py::object,
                 std::string,
@@ -37,7 +39,7 @@ void bind_game_state(py::module_& module) {
             py::arg("error") = "",
             py::arg("error_time") = 0.0,
             py::arg("log") = std::vector<std::string>{},
-            py::arg("action_queue") = py::none(),
+            py::arg("action_queue") = ActionQueueState{},
             py::arg("action_top") = py::none(),
             py::arg("resources") = py::none(),
             py::arg("suspended_normal_actor_id") = "",

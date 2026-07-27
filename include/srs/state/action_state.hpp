@@ -4,7 +4,7 @@
 #include <utility>
 #include <vector>
 
-namespace srs::state {
+namespace srs {
 
 struct CurrentActionState {
     std::string action_type;
@@ -48,4 +48,4 @@ struct ResourcesState {
           max_skill_points(max_skill_points) {}
 };
 
-}  // namespace srs::state
+}  // namespace srs

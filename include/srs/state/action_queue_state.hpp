@@ -4,7 +4,7 @@
 #include <utility>
 #include <vector>
 
-namespace srs::state {
+namespace srs {
 
 struct ActionQueueItemState {
     std::string char_id;
@@ -39,4 +39,12 @@ struct ActionQueueItemState {
           position(position) {}
 };
 
-}  // namespace srs::state
+struct ActionQueueState {
+    std::vector<ActionQueueItemState> items;
+
+    ActionQueueState() = default;
+    explicit ActionQueueState(std::vector<ActionQueueItemState> items)
+        : items(std::move(items)) {}
+};
+
+}  // namespace srs
