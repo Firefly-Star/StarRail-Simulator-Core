@@ -3,6 +3,8 @@
 #include <pybind11/pytypes.h>
 
 #include "srs/state/action_queue_state.hpp"
+#include "srs/state/action_state.hpp"
+#include "srs/state/action_top_state.hpp"
 
 #include <string>
 #include <utility>
@@ -22,8 +24,8 @@ struct GameState {
     double error_time = 0.0;
     std::vector<std::string> log = {};
     ActionQueueState action_queue;
-    pybind11::object action_top = pybind11::none();
-    pybind11::object resources = pybind11::none();
+    ActionTopState action_top;
+    ResourcesState resources;
     std::string suspended_normal_actor_id = "";
     pybind11::object last_result = pybind11::none();
     pybind11::object active_actor = pybind11::none();
@@ -40,8 +42,8 @@ struct GameState {
         double error_time = 0.0,
         std::vector<std::string> log = {},
         ActionQueueState action_queue = {},
-        pybind11::object action_top = pybind11::none(),
-        pybind11::object resources = pybind11::none(),
+        ActionTopState action_top = {},
+        ResourcesState resources = {},
         std::string suspended_normal_actor_id = "",
         pybind11::object last_result = pybind11::none(),
         pybind11::object active_actor = pybind11::none()

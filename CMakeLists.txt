@@ -20,11 +20,13 @@ separate_arguments(PYBIND11_INCLUDES NATIVE_COMMAND "${PYBIND11_INCLUDES_RAW}")
 
 add_library(starrail_cpp_core MODULE
     src/bindings/module.cpp
+    src/bindings/engine/bind_engine.cpp
     src/bindings/logic/bind_advance.cpp
     src/bindings/state/bind_action_queue_state.cpp
     src/bindings/state/bind_action_state.cpp
     src/bindings/state/bind_action_top_state.cpp
     src/bindings/state/bind_game_state.cpp
+    src/engine/battle_engine.cpp
     src/logic/advance.cpp
 )
 

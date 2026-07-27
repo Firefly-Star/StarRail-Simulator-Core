@@ -35,4 +35,12 @@ struct ActionTopEntryState {
           skill_id(std::move(skill_id)) {}
 };
 
+struct ActionTopState {
+    std::vector<ActionTopEntryState> entries;
+
+    ActionTopState() = default;
+    explicit ActionTopState(std::vector<ActionTopEntryState> entries)
+        : entries(std::move(entries)) {}
+};
+
 }  // namespace srs

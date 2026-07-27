@@ -3,11 +3,15 @@
 
 #include "bindings.hpp"
 #include "srs/state/action_queue_state.hpp"
+#include "srs/state/action_state.hpp"
+#include "srs/state/action_top_state.hpp"
 #include "srs/state/game_state.hpp"
 
 void bind_game_state(py::module_& module) {
     using srs::GameState;
     using srs::ActionQueueState;
+    using srs::ActionTopState;
+    using srs::ResourcesState;
 
     py::class_<GameState>(module, "GameState")
         .def(
@@ -23,8 +27,8 @@ void bind_game_state(py::module_& module) {
                 double,
                 std::vector<std::string>,
                 ActionQueueState,
-                py::object,
-                py::object,
+                ActionTopState,
+                ResourcesState,
                 std::string,
                 py::object,
                 py::object
@@ -40,8 +44,8 @@ void bind_game_state(py::module_& module) {
             py::arg("error_time") = 0.0,
             py::arg("log") = std::vector<std::string>{},
             py::arg("action_queue") = ActionQueueState{},
-            py::arg("action_top") = py::none(),
-            py::arg("resources") = py::none(),
+            py::arg("action_top") = ActionTopState{},
+            py::arg("resources") = ResourcesState{},
             py::arg("suspended_normal_actor_id") = "",
             py::arg("last_result") = py::none(),
             py::arg("active_actor") = py::none()

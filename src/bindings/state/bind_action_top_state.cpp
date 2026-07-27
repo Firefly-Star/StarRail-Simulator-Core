@@ -6,6 +6,7 @@
 
 void bind_action_top_state(py::module_& module) {
     using srs::ActionTopEntryState;
+    using srs::ActionTopState;
 
     module.attr("TOP_PRIORITY_FOLLOW_UP") = srs::TOP_PRIORITY_FOLLOW_UP;
     module.attr("TOP_PRIORITY_EXTRA_TURN") = srs::TOP_PRIORITY_EXTRA_TURN;
@@ -28,4 +29,13 @@ void bind_action_top_state(py::module_& module) {
         .def_readwrite("action_type", &ActionTopEntryState::action_type)
         .def_readwrite("phase", &ActionTopEntryState::phase)
         .def_readwrite("skill_id", &ActionTopEntryState::skill_id);
+
+    py::class_<ActionTopState>(module, "ActionTopState")
+        .def(py::init<>())
+        .def(py::init<std::vector<ActionTopEntryState>>(),
+             py::arg("entries") = std::vector<ActionTopEntryState>{})
+        .def("entries", [](const ActionTopState& s) { return s.entries; })
+        .def("set_entries", [](ActionTopState& s, const std::vector<ActionTopEntryState>& v) { s.entries = v; })
+        .def("__len__", [](const ActionTopState& s) { return s.entries.size(); })
+        .def("empty", [](const ActionTopState& s) { return s.entries.empty(); });
 }
