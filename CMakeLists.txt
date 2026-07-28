@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(starrail_simulator_core LANGUAGES CXX)
+project(starrail_simulator_core LANGUAGES C CXX)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -18,17 +18,12 @@ execute_process(
 
 separate_arguments(PYBIND11_INCLUDES NATIVE_COMMAND "${PYBIND11_INCLUDES_RAW}")
 
-add_library(starrail_cpp_core MODULE
-    src/bindings/module.cpp
-    src/bindings/engine/bind_engine.cpp
-    src/bindings/logic/bind_advance.cpp
-    src/bindings/state/bind_action_queue_state.cpp
-    src/bindings/state/bind_action_state.cpp
-    src/bindings/state/bind_action_top_state.cpp
-    src/bindings/state/bind_game_state.cpp
-    src/engine/battle_engine.cpp
-    src/logic/advance.cpp
+file(GLOB_RECURSE STARRAIL_CPP_CORE_SOURCES CONFIGURE_DEPENDS
+    src/*.cpp
+    src/*.c
 )
+
+add_library(starrail_cpp_core MODULE ${STARRAIL_CPP_CORE_SOURCES})
 
 target_include_directories(starrail_cpp_core
     PRIVATE
