@@ -67,6 +67,10 @@ void bind_engine(py::module_& module) {
     py::class_<BattleEngine>(module, "BattleEngine")
         .def(py::init<>())
         .def("init", &BattleEngine::init, py::arg("config"))
-        .def("tick", &BattleEngine::tick, py::arg("inputs"))
+        .def("begin_tick_timing", &BattleEngine::begin_tick_timing)
+        .def("exchange_state_buffers", &BattleEngine::exchange_state_buffers)
+        .def("get_snapshot", &BattleEngine::get_snapshot)
+        .def("compute_next", &BattleEngine::compute_next, py::arg("inputs"))
+        .def("wait_until_tick_end", &BattleEngine::wait_until_tick_end)
         .def("is_over", &BattleEngine::is_over);
 }

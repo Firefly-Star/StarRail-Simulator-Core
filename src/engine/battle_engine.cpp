@@ -1,18 +1,69 @@
 #include "srs/engine/battle_engine.hpp"
 
 #include <algorithm>
+#include <chrono>
+#include <thread>
 
 namespace srs {
 
 void BattleEngine::init(const BattleConfig& config) {
     config_ = config;
-    tick_count_ = 0;
     over_ = false;
+    current_tick_ = -1;
+    next_tick_ = 0;
+    current_snapshot_ = TickSnapshot{};
+    next_snapshot_ = make_mock_snapshot(0);
+    next_state_ready_ = true;
+    tick_timing_started_ = false;
 }
 
-TickSnapshot BattleEngine::tick(const std::vector<InputEvent>& inputs) {
+void BattleEngine::begin_tick_timing() {
+    tick_timing_started_ = true;
+    auto duration = std::chrono::duration<double>(tick_duration_seconds_);
+    tick_deadline_ = std::chrono::steady_clock::now() + std::chrono::duration_cast<std::chrono::steady_clock::duration>(duration);
+}
+
+void BattleEngine::exchange_state_buffers() {
+    if (next_state_ready_) {
+        current_snapshot_ = next_snapshot_;
+    } else {
+        current_snapshot_ = make_mock_snapshot(next_tick_);
+    }
+    current_tick_ = current_snapshot_.tick;
+    next_tick_ = current_tick_ + 1;
+    next_state_ready_ = false;
+
+    if (current_tick_ >= 10) {
+        over_ = true;
+    }
+}
+
+TickSnapshot BattleEngine::get_snapshot() const {
+    return current_snapshot_;
+}
+
+void BattleEngine::compute_next(const std::vector<InputEvent>& inputs) {
+    (void)inputs;
+    if (over_) {
+        return;
+    }
+    next_snapshot_ = make_mock_snapshot(next_tick_);
+    next_state_ready_ = true;
+}
+
+void BattleEngine::wait_until_tick_end() const {
+    if (!tick_timing_started_) {
+        return;
+    }
+    auto now = std::chrono::steady_clock::now();
+    if (now < tick_deadline_) {
+        std::this_thread::sleep_until(tick_deadline_);
+    }
+}
+
+TickSnapshot BattleEngine::make_mock_snapshot(int tick) const {
     TickSnapshot snap;
-    snap.tick = tick_count_++;
+    snap.tick = tick;
     snap.turn = 1;
     snap.phase = "normal_prepare";
     snap.phase_remaining_ticks = 3;
@@ -53,10 +104,6 @@ TickSnapshot BattleEngine::tick(const std::vector<InputEvent>& inputs) {
     snap.current_actor_max_energy = 120;
     snap.current_actor_position = 0;
     snap.is_enemy_turn = false;
-
-    if (tick_count_ > 10) {
-        over_ = true;
-    }
 
     return snap;
 }

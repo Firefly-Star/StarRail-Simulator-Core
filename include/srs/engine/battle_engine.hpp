@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <string>
 #include <vector>
 
@@ -69,14 +70,27 @@ class BattleEngine {
 public:
     void init(const BattleConfig& config);
 
-    TickSnapshot tick(const std::vector<InputEvent>& inputs);
+    void begin_tick_timing();
+    void exchange_state_buffers();
+    TickSnapshot get_snapshot() const;
+    void compute_next(const std::vector<InputEvent>& inputs);
+    void wait_until_tick_end() const;
 
     bool is_over() const;
 
 private:
-    int tick_count_ = 0;
+    TickSnapshot make_mock_snapshot(int tick) const;
+
     BattleConfig config_;
     bool over_ = false;
+    int current_tick_ = -1;
+    int next_tick_ = 0;
+    bool next_state_ready_ = false;
+    TickSnapshot current_snapshot_;
+    TickSnapshot next_snapshot_;
+    std::chrono::steady_clock::time_point tick_deadline_;
+    bool tick_timing_started_ = false;
+    double tick_duration_seconds_ = 0.05;
 };
 
 }  // namespace srs
