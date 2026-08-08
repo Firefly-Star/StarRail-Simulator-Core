@@ -11,8 +11,8 @@ void BattleEngine::init(const BattleConfig& cfg) {
     over = false;
     current_tick = -1;
     next_tick = 0;
-    current_snapshot = TickSnapshot{};
-    next_snapshot = make_mock_snapshot(0);
+    current_gamestate = GameState(0, "", 0);
+    next_gamestate = make_mock_gamestate(0);
     tick_timing_started = false;
 }
 
@@ -23,8 +23,8 @@ void BattleEngine::begin_tick_timing() {
 }
 
 void BattleEngine::exchange_state_buffers() {
-    current_snapshot = next_snapshot;
-    current_tick = current_snapshot.tick;
+    current_gamestate = next_gamestate;
+    current_tick = current_gamestate.tick;
     next_tick = current_tick + 1;
 
     if (current_tick >= 10) {
@@ -33,7 +33,7 @@ void BattleEngine::exchange_state_buffers() {
 }
 
 TickSnapshot BattleEngine::get_snapshot() const {
-    return current_snapshot;
+    return make_snapshot(current_gamestate);
 }
 
 void BattleEngine::compute_next(const std::vector<InputEvent>& inputs) {
@@ -41,7 +41,7 @@ void BattleEngine::compute_next(const std::vector<InputEvent>& inputs) {
     if (over) {
         return;
     }
-    next_snapshot = make_mock_snapshot(next_tick);
+    next_gamestate = make_mock_gamestate(next_tick);
 }
 
 void BattleEngine::wait_until_tick_end() const {
@@ -54,51 +54,21 @@ void BattleEngine::wait_until_tick_end() const {
     }
 }
 
-TickSnapshot BattleEngine::make_mock_snapshot(int tick) const {
-    TickSnapshot snap;
-    snap.tick = tick;
-    snap.turn = 1;
-    snap.phase = "normal_prepare";
-    snap.phase_remaining_ticks = 3;
-    snap.message = "希儿 的回合 — 选择指令";
-    snap.error = "";
-    snap.log = {"希儿 · 普攻 → 银鬃尉官"};
-    snap.skill_points = 3;
-    snap.max_skill_points = 5;
+GameState BattleEngine::make_mock_gamestate(int tick) const {
+    GameState gs(tick, "normal_prepare", 3, 1, "seele");
+    gs.message = "希儿 的回合 — 选择指令";
+    gs.error = "";
+    gs.log = {"希儿 · 普攻 → 银鬃尉官"};
+    gs.resources = ResourcesState(3, 5);
 
-    TickSnapshot::QueueItem seele_item;
-    seele_item.current_av = 10.0;
-    seele_item.char_id = "seele";
-    seele_item.name = "希儿";
-    seele_item.speed = 115;
-    seele_item.is_enemy = false;
-    seele_item.energy = 120;
-    seele_item.max_energy = 120;
-    seele_item.position = 0;
-    snap.action_queue.push_back(seele_item);
+    ActionQueueItemState seele("seele", 10.0, 0, false, "希儿", 115, 120, 120, 0);
+    ActionQueueItemState enemy("enemy1", 20.0, 0, true, "银鬃尉官", 90, 0, 0, 1);
+    gs.action_queue.items = {seele, enemy};
 
-    TickSnapshot::QueueItem enemy_item;
-    enemy_item.current_av = 20.0;
-    enemy_item.char_id = "enemy1";
-    enemy_item.name = "银鬃尉官";
-    enemy_item.speed = 90;
-    enemy_item.is_enemy = true;
-    enemy_item.energy = 0;
-    enemy_item.max_energy = 0;
-    enemy_item.position = 1;
-    snap.action_queue.push_back(enemy_item);
+    ActionTopEntryState top(TOP_PRIORITY_NORMAL, 0, "seele", "normal");
+    gs.action_top.entries = {top};
 
-    snap.top_queue.push_back("[普通] 希儿");
-
-    snap.current_actor_id = "seele";
-    snap.current_actor_name = "希儿";
-    snap.current_actor_speed = 115;
-    snap.current_actor_energy = 120;
-    snap.current_actor_max_energy = 120;
-    snap.current_actor_position = 0;
-    snap.is_enemy_turn = false;
-
-    return snap;
+    return gs;
 }
 
 bool BattleEngine::is_over() const {

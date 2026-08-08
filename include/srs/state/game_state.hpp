@@ -61,6 +61,8 @@ struct GameState {
     // 当前 active actor 载荷。过渡期 pybind 对象，后续应改为 C++ actor state。
     pybind11::object active_actor = pybind11::none();
 
+    GameState() : GameState(0, "", 0) {}
+
     GameState(
         int tick,
         std::string phase,

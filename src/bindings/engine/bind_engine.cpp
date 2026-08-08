@@ -3,6 +3,7 @@
 
 #include "bindings.hpp"
 #include "srs/engine/battle_engine.hpp"
+#include "srs/engine/snapshot.hpp"
 
 void bind_engine(py::module_& module) {
     using srs::InputEvent;
