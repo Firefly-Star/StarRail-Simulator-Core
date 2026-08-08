@@ -13,7 +13,6 @@ void BattleEngine::init(const BattleConfig& cfg) {
     next_tick = 0;
     current_snapshot = TickSnapshot{};
     next_snapshot = make_mock_snapshot(0);
-    next_state_ready = true;
     tick_timing_started = false;
 }
 
@@ -24,14 +23,9 @@ void BattleEngine::begin_tick_timing() {
 }
 
 void BattleEngine::exchange_state_buffers() {
-    if (next_state_ready) {
-        current_snapshot = next_snapshot;
-    } else {
-        current_snapshot = make_mock_snapshot(next_tick);
-    }
+    current_snapshot = next_snapshot;
     current_tick = current_snapshot.tick;
     next_tick = current_tick + 1;
-    next_state_ready = false;
 
     if (current_tick >= 10) {
         over = true;
@@ -48,7 +42,6 @@ void BattleEngine::compute_next(const std::vector<InputEvent>& inputs) {
         return;
     }
     next_snapshot = make_mock_snapshot(next_tick);
-    next_state_ready = true;
 }
 
 void BattleEngine::wait_until_tick_end() const {

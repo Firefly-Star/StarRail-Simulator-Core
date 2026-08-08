@@ -133,27 +133,36 @@ class BattleEngine {
 public:
     void init(const BattleConfig& cfg);
 
+    // 固定节奏计时：每 tick 至少推进 tick_duration_seconds 秒。
     void begin_tick_timing();
     void exchange_state_buffers();
     TickSnapshot get_snapshot() const;
+    // TODO(mock): 当前只生成 mock 快照，需替换为真实结算。
     void compute_next(const std::vector<InputEvent>& inputs);
+    // 与 begin_tick_timing 配套：等当前 tick 达到固定时长。
     void wait_until_tick_end() const;
 
     bool is_over() const;
 
 private:
+    // TODO(mock): 生成假数据快照，真实引擎接入后删除。
     TickSnapshot make_mock_snapshot(int tick) const;
 
-    BattleConfig config;
+    // —— 随 tick 变化的状态变量 ——
     bool over = false;
     int current_tick = -1;
     int next_tick = 0;
-    bool next_state_ready = false;
     TickSnapshot current_snapshot;
     TickSnapshot next_snapshot;
     std::chrono::steady_clock::time_point tick_deadline;
     bool tick_timing_started = false;
+
+    // —— 基本不会变化的产品配置 ——
+    BattleConfig config;
     double tick_duration_seconds = 0.05;
+
+    // —— mock 阶段临时保留的变量 ——
+    // 当前无；mock 逻辑集中在 make_mock_snapshot。
 };
 
 }  // namespace srs
