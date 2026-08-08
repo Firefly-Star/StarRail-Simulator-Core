@@ -12,11 +12,22 @@ constexpr int TOP_PRIORITY_ULTIMATE = 2;
 constexpr int TOP_PRIORITY_NORMAL = 3;
 
 struct ActionTopEntryState {
+    // 执行优先级，数值越小优先级越高。
     int priority;
+
+    // 同优先级条目的 FIFO 并列裁决序号。
     int seq;
+
+    // 该即时行动条目的所属角色。
     std::string char_id;
+
+    // 行动类别，例如 normal、ultimate、follow_up、extra_turn。
     std::string action_type;
+
+    // 该条目被派发时要进入的 phase。空字符串表示由调度逻辑决定。
     std::string phase = "";
+
+    // 该即时行动绑定的技能 id。空字符串表示使用 action_type 的默认行动。
     std::string skill_id = "";
 
     ActionTopEntryState(
@@ -36,6 +47,7 @@ struct ActionTopEntryState {
 };
 
 struct ActionTopState {
+    // 即时行动条目。这里只存数据，入队、出队和排序由调度逻辑负责。
     std::vector<ActionTopEntryState> entries;
 
     ActionTopState() = default;

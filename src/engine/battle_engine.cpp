@@ -6,58 +6,58 @@
 
 namespace srs {
 
-void BattleEngine::init(const BattleConfig& config) {
-    config_ = config;
-    over_ = false;
-    current_tick_ = -1;
-    next_tick_ = 0;
-    current_snapshot_ = TickSnapshot{};
-    next_snapshot_ = make_mock_snapshot(0);
-    next_state_ready_ = true;
-    tick_timing_started_ = false;
+void BattleEngine::init(const BattleConfig& cfg) {
+    config = cfg;
+    over = false;
+    current_tick = -1;
+    next_tick = 0;
+    current_snapshot = TickSnapshot{};
+    next_snapshot = make_mock_snapshot(0);
+    next_state_ready = true;
+    tick_timing_started = false;
 }
 
 void BattleEngine::begin_tick_timing() {
-    tick_timing_started_ = true;
-    auto duration = std::chrono::duration<double>(tick_duration_seconds_);
-    tick_deadline_ = std::chrono::steady_clock::now() + std::chrono::duration_cast<std::chrono::steady_clock::duration>(duration);
+    tick_timing_started = true;
+    auto duration = std::chrono::duration<double>(tick_duration_seconds);
+    tick_deadline = std::chrono::steady_clock::now() + std::chrono::duration_cast<std::chrono::steady_clock::duration>(duration);
 }
 
 void BattleEngine::exchange_state_buffers() {
-    if (next_state_ready_) {
-        current_snapshot_ = next_snapshot_;
+    if (next_state_ready) {
+        current_snapshot = next_snapshot;
     } else {
-        current_snapshot_ = make_mock_snapshot(next_tick_);
+        current_snapshot = make_mock_snapshot(next_tick);
     }
-    current_tick_ = current_snapshot_.tick;
-    next_tick_ = current_tick_ + 1;
-    next_state_ready_ = false;
+    current_tick = current_snapshot.tick;
+    next_tick = current_tick + 1;
+    next_state_ready = false;
 
-    if (current_tick_ >= 10) {
-        over_ = true;
+    if (current_tick >= 10) {
+        over = true;
     }
 }
 
 TickSnapshot BattleEngine::get_snapshot() const {
-    return current_snapshot_;
+    return current_snapshot;
 }
 
 void BattleEngine::compute_next(const std::vector<InputEvent>& inputs) {
     (void)inputs;
-    if (over_) {
+    if (over) {
         return;
     }
-    next_snapshot_ = make_mock_snapshot(next_tick_);
-    next_state_ready_ = true;
+    next_snapshot = make_mock_snapshot(next_tick);
+    next_state_ready = true;
 }
 
 void BattleEngine::wait_until_tick_end() const {
-    if (!tick_timing_started_) {
+    if (!tick_timing_started) {
         return;
     }
     auto now = std::chrono::steady_clock::now();
-    if (now < tick_deadline_) {
-        std::this_thread::sleep_until(tick_deadline_);
+    if (now < tick_deadline) {
+        std::this_thread::sleep_until(tick_deadline);
     }
 }
 
@@ -109,7 +109,7 @@ TickSnapshot BattleEngine::make_mock_snapshot(int tick) const {
 }
 
 bool BattleEngine::is_over() const {
-    return over_;
+    return over;
 }
 
 }  // namespace srs
