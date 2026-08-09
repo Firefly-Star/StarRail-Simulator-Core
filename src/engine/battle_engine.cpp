@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <memory>
 #include <thread>
 
 namespace srs {
@@ -61,9 +62,30 @@ GameState BattleEngine::make_mock_gamestate(int tick) const {
     gs.log = {"希儿 · 普攻 → 银鬃尉官"};
     gs.resources = ResourcesState(3, 5);
 
-    ActionQueueItemState seele("seele", 10.0, 0, false, "希儿", 115, 120, 120, 0);
-    ActionQueueItemState enemy("enemy1", 20.0, 0, true, "银鬃尉官", 90, 0, 0, 1);
-    gs.action_queue.items = {seele, enemy};
+    auto seele = std::make_unique<Character>();
+    seele->id = 0;
+    seele->char_id = "seele";
+    seele->name = "希儿";
+    seele->speed_ = 115;
+    seele->current_av = 10.0;
+    seele->is_enemy = false;
+    seele->energy = 120;
+    seele->max_energy = 120;
+    seele->position = 0;
+
+    auto enemy = std::make_unique<Enemy>();
+    enemy->id = 1;
+    enemy->char_id = "enemy1";
+    enemy->name = "银鬃尉官";
+    enemy->speed_ = 90;
+    enemy->current_av = 20.0;
+    enemy->is_enemy = true;
+    enemy->position = 1;
+
+    std::vector<std::unique_ptr<Actor>> items;
+    items.push_back(std::move(seele));
+    items.push_back(std::move(enemy));
+    gs.action_queue.items = std::move(items);
 
     ActionTopEntryState top(TOP_PRIORITY_NORMAL, 0, "seele", "normal");
     gs.action_top.entries = {top};

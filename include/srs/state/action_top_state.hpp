@@ -8,8 +8,8 @@ namespace srs {
 
 constexpr int TOP_PRIORITY_FOLLOW_UP = 0;
 constexpr int TOP_PRIORITY_EXTRA_TURN = 1;
-constexpr int TOP_PRIORITY_ULTIMATE = 2;
-constexpr int TOP_PRIORITY_NORMAL = 3;
+constexpr int TOP_PRIORITY_ULTIMATE = 1;
+constexpr int TOP_PRIORITY_NORMAL = 2;
 
 struct ActionTopEntryState {
     // 执行优先级，数值越小优先级越高。

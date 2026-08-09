@@ -1,11 +1,11 @@
 #pragma once
 
-#include <pybind11/pytypes.h>
-
 #include "srs/state/action_queue_state.hpp"
 #include "srs/state/action_state.hpp"
 #include "srs/state/action_top_state.hpp"
 
+#include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -28,8 +28,8 @@ struct GameState {
     // 当前正在准备或结算行动的角色 id。空字符串表示没有当前角色。
     std::string current_actor_id = "";
 
-    // 当前行动上下文。过渡期 pybind 对象，目标形态应改成 C++ 值类型状态。
-    pybind11::object current_action = pybind11::none();
+    // 当前行动上下文。空 optional 表示没有正在准备/结算的行动。
+    std::optional<CurrentActionState> current_action;
 
     // 当前 snapshot 展示给用户的状态消息。
     std::string message = "";
@@ -55,11 +55,11 @@ struct GameState {
     // 被插队行动暂停的普通行动角色 id。空字符串表示没有被暂停的角色。
     std::string suspended_normal_actor_id = "";
 
-    // 上一次技能/行动结算结果。过渡期 pybind 对象，后续应改为 C++ 值类型状态。
-    pybind11::object last_result = pybind11::none();
+    // 上一次技能/行动结算结果。空 optional 表示当前没有结算结果。
+    std::optional<SkillResult> last_result;
 
-    // 当前 active actor 载荷。过渡期 pybind 对象，后续应改为 C++ actor state。
-    pybind11::object active_actor = pybind11::none();
+    // 当前 active actor 载荷。空指针表示当前没有 active actor。
+    std::unique_ptr<Actor> active_actor;
 
     GameState() : GameState(0, "", 0) {}
 
@@ -69,7 +69,7 @@ struct GameState {
         int phase_remaining_ticks,
         int turn = 0,
         std::string current_actor_id = "",
-        pybind11::object current_action = pybind11::none(),
+        std::optional<CurrentActionState> current_action = std::nullopt,
         std::string message = "",
         std::string error = "",
         double error_time = 0.0,
@@ -78,8 +78,8 @@ struct GameState {
         ActionTopState action_top = {},
         ResourcesState resources = {},
         std::string suspended_normal_actor_id = "",
-        pybind11::object last_result = pybind11::none(),
-        pybind11::object active_actor = pybind11::none()
+        std::optional<SkillResult> last_result = std::nullopt,
+        std::unique_ptr<Actor> active_actor = nullptr
     )
         : tick(tick),
           phase(std::move(phase)),
@@ -97,6 +97,50 @@ struct GameState {
           suspended_normal_actor_id(std::move(suspended_normal_actor_id)),
           last_result(std::move(last_result)),
           active_actor(std::move(active_actor)) {}
+
+    // 值语义：复制时深拷贝队列与 active actor。
+    GameState(const GameState& other)
+        : tick(other.tick),
+          phase(other.phase),
+          phase_remaining_ticks(other.phase_remaining_ticks),
+          turn(other.turn),
+          current_actor_id(other.current_actor_id),
+          current_action(other.current_action),
+          message(other.message),
+          error(other.error),
+          error_time(other.error_time),
+          log(other.log),
+          action_queue(other.action_queue),
+          action_top(other.action_top),
+          resources(other.resources),
+          suspended_normal_actor_id(other.suspended_normal_actor_id),
+          last_result(other.last_result),
+          active_actor(other.active_actor ? other.active_actor->clone() : nullptr) {}
+
+    GameState& operator=(const GameState& other) {
+        if (this != &other) {
+            tick = other.tick;
+            phase = other.phase;
+            phase_remaining_ticks = other.phase_remaining_ticks;
+            turn = other.turn;
+            current_actor_id = other.current_actor_id;
+            current_action = other.current_action;
+            message = other.message;
+            error = other.error;
+            error_time = other.error_time;
+            log = other.log;
+            action_queue = other.action_queue;
+            action_top = other.action_top;
+            resources = other.resources;
+            suspended_normal_actor_id = other.suspended_normal_actor_id;
+            last_result = other.last_result;
+            active_actor = other.active_actor ? other.active_actor->clone() : nullptr;
+        }
+        return *this;
+    }
+
+    GameState(GameState&&) = default;
+    GameState& operator=(GameState&&) = default;
 };
 
 }  // namespace srs

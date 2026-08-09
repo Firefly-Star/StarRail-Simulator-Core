@@ -19,8 +19,8 @@ const std::unordered_map<std::string, std::string>& action_type_labels() {
 
 std::string char_name(const GameState& game_state, const std::string& char_id) {
     for (const auto& item : game_state.action_queue.items) {
-        if (item.char_id == char_id) {
-            return item.name;
+        if (item && item->char_id == char_id) {
+            return item->name.empty() ? item->char_id : item->name;
         }
     }
     return char_id;
@@ -43,26 +43,29 @@ TickSnapshot make_snapshot(const GameState& game_state) {
     snap.current_actor_id = game_state.current_actor_id;
 
     for (const auto& item : game_state.action_queue.items) {
+        if (!item) {
+            continue;
+        }
         TickSnapshot::QueueItem qi;
-        qi.current_av = item.current_av;
-        qi.char_id = item.char_id;
-        qi.name = item.name;
-        qi.speed = item.speed;
-        qi.is_enemy = item.is_enemy;
-        qi.energy = item.energy;
-        qi.max_energy = item.max_energy;
-        qi.position = item.position;
+        qi.current_av = item->current_av;
+        qi.char_id = item->char_id;
+        qi.name = item->name;
+        qi.speed = static_cast<int>(item->speed());
+        qi.is_enemy = item->is_enemy;
+        qi.energy = item->energy;
+        qi.max_energy = item->max_energy;
+        qi.position = item->position;
         snap.action_queue.push_back(qi);
     }
 
     for (const auto& item : game_state.action_queue.items) {
-        if (item.char_id == game_state.current_actor_id) {
-            snap.current_actor_name = item.name;
-            snap.current_actor_speed = item.speed;
-            snap.current_actor_energy = item.energy;
-            snap.current_actor_max_energy = item.max_energy;
-            snap.current_actor_position = item.position;
-            snap.is_enemy_turn = item.is_enemy;
+        if (item && item->char_id == game_state.current_actor_id) {
+            snap.current_actor_name = item->name;
+            snap.current_actor_speed = static_cast<int>(item->speed());
+            snap.current_actor_energy = item->energy;
+            snap.current_actor_max_energy = item->max_energy;
+            snap.current_actor_position = item->position;
+            snap.is_enemy_turn = item->is_enemy;
             break;
         }
     }
